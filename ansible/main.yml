@@ -1,0 +1,21 @@
+---
+- hosts: "{{ host }}"
+  remote_user: admin ##可以切换root执行远程
+  become: true
+  become_method: su
+  tasks:
+    ###暂停### 关键字wait_for
+    - name: 暂停30秒，然后继续..
+      wait_for:
+        timeout: 30
+
+    ##下载某个东西## 模块unarchive
+    - name: 下载东西
+      unarchive:
+        src: "可以是本地的文件，或者是URL"
+        dest: "远程主机上的一个路径，即文件解压的路径，注意后面不要带斜杠"
+        remote_src: True
+      delegate_to: 127.0.0.1  ##下载到本地
+      run_once: True ##只跑一次
+      when:  "ansible_expr.split('.')[0].split('_')[1] ==  'xxxx'"   ##当host的主机符合条件的时候执行
+
