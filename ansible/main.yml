@@ -19,3 +19,51 @@
       run_once: True ##只跑一次
       when:  "ansible_expr.split('.')[0].split('_')[1] ==  'xxxx'"   ##当host的主机符合条件的时候执行
 
+    - name: mkdir  dir 批量创建目录
+      file:
+        path: "/data2/bak41month/download/{{ item }}"
+        state: directory
+        mode: 0755
+      with_items:
+        - dir1
+        - dir2     
+
+    ##debug信息打印###      
+    - name: print sth here
+      shell: ls -l
+      register: lsoutput
+    - name: echo lsoutput info
+      debug:
+        var: lsoutput.stdout_lines
+
+    ##拷贝文件到远程## 关键字copy      
+    - name: upload scripts
+      copy:
+        src: "scripts/{{ item }}"
+        dest: "/usr/local/bin"
+        mode: 0755
+      with_items:
+        - item1
+        - item2
+
+    ##拷贝远程的文件到本地## 关键字 find feth    
+    - name: find file
+      find:
+        paths: "主机远程路径"
+        patterns: "*"
+        recurse: no
+      register: resfile
+
+    - name: scp file
+      fetch:
+        src: "{{ item.path }}"
+        dest: "本地的路径"
+        flat: yes
+      with_items: "{{ resfile.files }}"
+
+    ##执行shell命令##
+    - name: ignore_errors test
+      shell:  ls -l
+      ignore_errors: True  ##如果失败了， 也会执行下一条name。
+
+    
