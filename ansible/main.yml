@@ -66,4 +66,17 @@
       shell:  ls -l
       ignore_errors: True  ##如果失败了， 也会执行下一条name。
 
+    # 2.when条件判断之引用变量
+    # when变量引用错误提示：[WARNING]: when statements should not include jinja2 templating delimiters such as {{ }} or {% %}.
+    # 正确的引用方式：将{{}} or {% %} 改为()
+    # 错误写法示例：when: ansible_default_ipv4.address == {{ ETCD_NODE03 }}
+    # 正确写法示例：when: ansible_default_ipv4.address == (ETCD_NODE03)
+    - name: check cn game Srv port
+      shell:  netstat -ntlp |grep  -E -w "71|72|73"
+      when: "hosts == 'lzll_ios_cn_zs.(zone).Game.1' "
+
+    - name: check gat game Srv port
+      shell:  netstat -ntlp |grep  -E -w "71|72|73"
+      when: 
+        ansible_expr |  regex_search('(_gat_)')  ##主机名包含"_gat_"
     
